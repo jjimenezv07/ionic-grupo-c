@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Color Tapper + Práctica C</title>
+
+  <!-- Ionic Core v7 -->
+  <link href="https://cdn.jsdelivr.net/npm/@ionic/core@7.6.0/css/ionic.bundle.css" rel="stylesheet">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core@7.6.0/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core@7.6.0/dist/ionic/ionic.js"></script>
+
+  <!-- Ionicons -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: 'var(--app-primary-color)',
+            title: 'var(--app-title-color)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --app-primary-color: #1E90FF; /* Océano */
+      --app-title-color: var(--app-primary-color); /* Inicia igual al primario */
+    }
+
+    .theme-bg {
+      background-color: var(--app-primary-color);
+      transition: background-color 0.5s ease;
+    }
+
+    .title-dynamic {
+      color: var(--app-title-color) !important;
+      transition: color 0.3s ease;
+    }
+
+    .validation-note {
+      display: flex;
+      align-items: center;
+      font-size: 0.875rem;
+      margin-top: 5px;
+      padding-left: 15px;
+      color: var(--ion-color-danger);
+    }
+
+    .btn-theme {
+      transition: all 0.3s ease;
+    }
+    .btn-theme:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .btn-theme:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <ion-app>
+    <!-- Color Tapper Banner -->
+    <div class="theme-bg text-white p-4 text-center">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Color Tapper + Práctica C</h1>
+      <p class="mb-4">Selecciona un tema para cambiar el fondo de toda la app.</p>
+      
+      <div class="flex flex-wrap justify-center gap-2">
+        <!-- Botones de tema se generarán con JS -->
+      </div>
+
+      <div class="mt-3 text-sm font-mono">
+        Tema: <span id="theme-name">Océano</span> • 
+        Fondo: <span id="theme-hex">#1E90FF</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <ion-content class="ion-padding">
+      <!-- Input Card -->
+      <ion-card style="box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <ion-card-header>
+          <ion-card-title class="title-dynamic text-center font-bold text-2xl">
+            Bienvenido A la practica del Grupo C
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <!-- Name Input -->
+          <ion-item id="item-nombre" lines="full">
+            <ion-icon name="person" slot="start"></ion-icon>
+            <ion-label position="floating">Digite su nombre</ion-label>
+            <ion-input id="input-nombre" placeholder="Nombre completo"></ion-input>
+          </ion-item>
+
+          <!-- Matrícula Input -->
+          <ion-item id="item-matricula" lines="full">
+            <ion-icon name="star" slot="start"></ion-icon>
+            <ion-label position="floating">Digite su matrícula</ion-label>
+            <ion-input 
+              id="input-matricula" 
+              placeholder="Ej: 2020-0001"
+              type="text"
+            ></ion-input>
+          </ion-item>
+
+          <!-- Validation Note -->
+          <div id="note-invalid" class="validation-note" style="display: none;">
+            <ion-icon name="alert-circle" style="margin-right: 5px;"></ion-icon>
+            Formato inválido. Use solo números y guiones (Ej: 2020-0001).
+          </div>
+
+          <div class="mt-6 text-center">
+            <ion-button 
+              id="btn-color" 
+              expand="block" 
+              color="secondary"
+              disabled
+            >
+              Cambiar Color del Título (Variable CSS)
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Data Card -->
+      <ion-card color="medium" class="mt-6">
+        <ion-card-header>
+          <ion-card-title class="text-white text-xl">Datos Recopilados</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="text-white">
+          <p><strong>Nombre:</strong> <span id="display-nombre">N/A</span></p>
+          <p><strong>Matrícula:</strong> <span id="display-matricula">N/A</span></p>
+          <p class="mt-2 text-sm">
+            <strong>Color del Título:</strong> 
+            <span id="title-color-hex">#1E90FF</span>
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+
+    <ion-footer>
+      <ion-toolbar color="light">
+        <ion-title size="small" class="text-center">
+          Práctica de Programación Móvil • Grupo C
+        </ion-title>
+      </ion-toolbar>
+    </ion-footer>
+  </ion-app>
+
+  <script>
+    // ====== Temas de Color Tapper ======
+    const THEMES = [
+      { name: 'Océano',       primary: '#1E90FF', button: '#00BFFF' },
+      { name: 'Puesta de Sol', primary: '#FF4500', button: '#FF8C00' },
+      { name: 'Bosque',       primary: '#228B22', button: '#3CB371' },
+      { name: 'Ametista',     primary: '#9932CC', button: '#BA55D3' },
+      { name: 'Gris Carbón',  primary: '#36454F', button: '#696969' }
+    ];
+
+    // ====== Colores extra para el título (rotación independiente) ======
+    const TITLE_COLORS = [
+      '#FF4500', '#3CB371', '#1E90FF', '#BA55D3', '#FFD700', '#000000'
+    ];
+    let titleColorIndex = -1; // -1 = no ha usado el botón aún → hereda del tema
+
+    // ====== DOM Elements ======
+    const buttonsContainer = document.querySelector('.flex.flex-wrap');
+    const themeNameSpan = document.getElementById('theme-name');
+    const themeHexSpan = document.getElementById('theme-hex');
+    const inputNombre = document.getElementById('input-nombre');
+    const inputMatricula = document.getElementById('input-matricula');
+    const itemNombre = document.getElementById('item-nombre');
+    const itemMatricula = document.getElementById('item-matricula');
+    const noteInvalid = document.getElementById('note-invalid');
+    const btnColor = document.getElementById('btn-color');
+    const displayNombre = document.getElementById('display-nombre');
+    const displayMatricula = document.getElementById('display-matricula');
+    const titleColorHexSpan = document.getElementById('title-color-hex');
+
+    // ====== Funciones ======
+    function applyTheme(theme) {
+      // Actualiza variable CSS global
+      document.documentElement.style.setProperty('--app-primary-color', theme.primary);
+      themeNameSpan.textContent = theme.name;
+      themeHexSpan.textContent = theme.primary;
+
+      // Si el título aún no ha sido modificado manualmente, lo sincronizamos
+      if (titleColorIndex === -1) {
+        document.documentElement.style.setProperty('--app-title-color', theme.primary);
+        titleColorHexSpan.textContent = theme.primary;
+      }
+    }
+
+    function changeTitleColor() {
+      // Primera vez: empezamos desde el primer color extra
+      if (titleColorIndex === -1) {
+        titleColorIndex = 0;
+      } else {
+        titleColorIndex = (titleColorIndex + 1) % TITLE_COLORS.length;
+      }
+
+      const newColor = TITLE_COLORS[titleColorIndex];
+      document.documentElement.style.setProperty('--app-title-color', newColor);
+      titleColorHexSpan.textContent = newColor;
+    }
+
+    function validateAndUpdate() {
+      const nombre = inputNombre.value?.trim() || '';
+      const matricula = inputMatricula.value?.trim() || '';
+
+      displayNombre.textContent = nombre || 'N/A';
+      displayMatricula.textContent = matricula || 'N/A';
+
+      itemNombre.color = nombre ? 'success' : '';
+      
+      const isMatriculaValid = matricula.length >= 5 && /^[0-9-]+$/.test(matricula);
+      itemMatricula.color = isMatriculaValid ? 'success' : 'danger';
+      noteInvalid.style.display = (!isMatriculaValid && matricula.length > 0) ? 'flex' : 'none';
+
+      btnColor.disabled = !isMatriculaValid;
+    }
+
+    // ====== Inicialización ======
+    // Botones de tema
+    THEMES.forEach(theme => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn-theme px-3 py-1.5 text-sm font-medium rounded-full text-white shadow';
+      btn.style.backgroundColor = theme.button;
+      btn.textContent = theme.name;
+      btn.onclick = () => applyTheme(theme);
+      buttonsContainer.appendChild(btn);
+    });
+
+    // Botón de cambio de título
+    btnColor.addEventListener('click', changeTitleColor);
+
+    // Validación en tiempo real
+    inputNombre.addEventListener('ionInput', validateAndUpdate);
+    inputMatricula.addEventListener('ionInput', validateAndUpdate);
+
+    // Inicializar con primer tema
+    applyTheme(THEMES[0]);
+    validateAndUpdate();
+  </script>
+</body>
+</html>
+
